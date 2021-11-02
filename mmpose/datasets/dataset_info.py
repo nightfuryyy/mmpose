@@ -70,8 +70,11 @@ class DatasetInfo:
 
         self.flip_index_name = []
         self.flip_pairs_name = []
-
+        print(self.keypoint_info)
         for kid in self.keypoint_info.keys():
+            print("===============")
+            print(kid)
+            print(self.keypoint_info[kid]['name'])
 
             keypoint_name = self.keypoint_info[kid]['name']
             self.keypoint_id2name[kid] = keypoint_name

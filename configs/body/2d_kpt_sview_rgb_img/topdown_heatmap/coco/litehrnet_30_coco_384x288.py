@@ -4,36 +4,36 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='mAP', key_indicator='AP')
+evaluation = dict(interval=2, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=5e-4,
+    lr=1.25e-4,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
     policy='step',
     warmup='linear',
-    warmup_iters=500,
+    warmup_iters=100,
     warmup_ratio=0.001,
-    step=[170, 200])
-total_epochs = 210
+    step=[16, 20])
+total_epochs = 21
 log_config = dict(
-    interval=50,
+    interval=10,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
     ])
 
 channel_cfg = dict(
-    num_output_channels=17,
-    dataset_joints=17,
+    num_output_channels=4,
+    dataset_joints=4,
     dataset_channel=[
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        [0, 1, 2, 3],
     ],
     inference_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+        0, 1, 2, 3
     ])
 
 # model settings
@@ -75,6 +75,8 @@ model = dict(
         modulate_kernel=11))
 
 data_cfg = dict(
+    # image_size=[360, 360],
+    # heatmap_size=[90, 90],
     image_size=[288, 384],
     heatmap_size=[72, 96],
     num_output_channels=channel_cfg['num_output_channels'],
@@ -85,10 +87,11 @@ data_cfg = dict(
     nms_thr=1.0,
     oks_thr=0.9,
     vis_thr=0.2,
-    use_gt_bbox=False,
+    use_gt_bbox=True,
     det_bbox_thr=0.0,
-    bbox_file='data/coco/person_detection_results/'
-    'COCO_val2017_detections_AP_H_56_person.json',
+    bbox_file=''
+    # bbox_file='data/coco/person_detection_results/'
+    # 'COCO_val2017_detections_AP_H_56_person.json',
 )
 
 train_pipeline = [
@@ -136,28 +139,34 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = '/home/quannd/CardDetection/one_class_coco_dataset'
 data = dict(
-    samples_per_gpu=32,
-    workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=32),
-    test_dataloader=dict(samples_per_gpu=32),
+    samples_per_gpu=20,
+    workers_per_gpu=10,
+    val_dataloader=dict(samples_per_gpu=20),
+    test_dataloader=dict(samples_per_gpu=20),
     train=dict(
         type='TopDownCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
-        img_prefix=f'{data_root}/train2017/',
+        ann_file=f'{data_root}/annotations/train.json',
+        img_prefix=f'{data_root}/images_train/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='TopDownCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        ann_file=f'{data_root}/annotations/val.json',
+        img_prefix=f'{data_root}/images_val/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        img_prefix=f'{data_root}/images_val/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )
+
+# name ten diem 
+# type tren hay duoi body 
+# swap swap cho diem nao doi xung
+
+
